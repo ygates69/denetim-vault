@@ -1,13 +1,13 @@
 /*
- * YGA marka bandı — tüm YGA ürünlerinde ortak logo ve telif bilgisi.
+ * YGATES marka bandı — tüm YGATES ürünlerinde ortak logo ve telif bilgisi.
  * Kullanım: <script src="marka.js" defer></script>
  * İsteğe bağlı: <body data-yga-urun="Stok Kokpit"> ürün adını banda ekler.
  * Sayfada [data-yga-telif] öğesi varsa telif metni oraya yazılır; yoksa sayfa sonuna bant eklenir.
- * © YGA Stratejik Yönetim ve Danışmanlık. Tüm hakları saklıdır.
+ * © YGATES Stratejik Yönetim ve Danışmanlık. Tüm hakları saklıdır.
  */
 (function () {
   "use strict";
-  var FIRMA = "YGA Stratejik Yönetim ve Danışmanlık";
+  var FIRMA = "YGATES Stratejik Yönetim ve Danışmanlık";
   var LOGO =
     '<svg viewBox="100 90 820 820" fill="none" stroke="currentColor" stroke-width="61" ' +
     'stroke-linejoin="miter" aria-hidden="true"><path d="M406 395 L509 498 L589 417 L424 251 ' +
