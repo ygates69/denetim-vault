@@ -11,7 +11,7 @@
   var LOGO =
     '<svg viewBox="100 90 820 820" fill="none" stroke="currentColor" stroke-width="61" ' +
     'stroke-linejoin="miter" aria-hidden="true"><path d="M406 395 L509 498 L589 417 L424 251 ' +
-    'L512 163 L600 251 L512 339"/><path d="M362 311 L256 415 L510 670 L743 437"/>' +
+    'L512 163 L600 251 L512 339"/><path d="M362 311 L256 415 L510 670 L712 468"/>' +
     '<path d="M157 474 L512 827 L846 495 L662 311"/></svg>';
 
   function telifMetni(urun) {
