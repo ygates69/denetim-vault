@@ -8,7 +8,10 @@ var CHECKOUT = {
   kurumsal: "",
   "suresiz-bireysel": "", // süresiz tam lisans
   "suresiz-ekip": "",
-  "suresiz-kurumsal": ""
+  "suresiz-kurumsal": "",
+  "guncelleme-bireysel": "", // süresiz lisans için güncelleme paketi
+  "guncelleme-ekip": "",
+  "guncelleme-kurumsal": ""
 };
 
 (function () {
