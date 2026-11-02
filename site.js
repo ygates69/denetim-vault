@@ -3,15 +3,13 @@
 // Lemon Squeezy ödeme bağlantıları: ürünler oluşturulunca buraya yapıştırın.
 // Boş bırakılan kademede düğme iletişim bölümüne gider.
 var CHECKOUT = {
-  bireysel: "",           // abonelik
+  bireysel: "",           // tek seferlik süresiz lisans
   ekip: "",
   kurumsal: "",
-  "suresiz-bireysel": "", // süresiz tam lisans
-  "suresiz-ekip": "",
-  "suresiz-kurumsal": "",
-  "guncelleme-bireysel": "", // süresiz lisans için güncelleme paketi
+  "guncelleme-bireysel": "", // isteğe bağlı yıllık güncelleme paketi
   "guncelleme-ekip": "",
-  "guncelleme-kurumsal": ""
+  "guncelleme-kurumsal": "",
+  egitim: ""              // ekip eğitimi
 };
 
 (function () {

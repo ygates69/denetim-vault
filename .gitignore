@@ -1,1 +1,27 @@
 .DS_Store
+
+# --- Gizli dosyalar: asla depoya girmez ---
+.env
+.env.*
+!.env.example
+!.env.sample
+*.pem
+*.key
+*.p12
+*.pfx
+*.keystore
+*.jks
+id_rsa*
+id_ed25519*
+credentials*.json
+secrets.*
+secret.*
+.npmrc
+.pypirc
+.netrc
+.git-credentials
+ozel_anahtar*
+*_ozel.*
+*-satici/
+anahtarlar/
+YGATES-ANAHTAR/
