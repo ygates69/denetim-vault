@@ -1,16 +1,7 @@
 // Dil seçimi (TR/EN) ve satın alma bağlantıları.
 
-// Lemon Squeezy ödeme bağlantıları: ürünler oluşturulunca buraya yapıştırın.
-// Boş bırakılan kademede düğme iletişim bölümüne gider.
-var CHECKOUT = {
-  bireysel: "",           // tek seferlik süresiz lisans
-  ekip: "",
-  kurumsal: "",
-  "guncelleme-bireysel": "", // isteğe bağlı yıllık güncelleme paketi
-  "guncelleme-ekip": "",
-  "guncelleme-kurumsal": "",
-  egitim: ""              // ekip eğitimi
-};
+// Satın alma düğmeleri doğrudan ödeme sayfasına gitmez: önce onay sayfası (onay.html) açılır.
+// Ödeme bağlantısını, onay kaydedildikten sonra onay sunucusu üretir (sunucu/onay-kaydi).
 
 (function () {
   var root = document.documentElement;
@@ -26,6 +17,14 @@ var CHECKOUT = {
     root.setAttribute("lang", l);
     var btn = document.querySelector(".lang-btn");
     if (btn) btn.textContent = l === "tr" ? "English" : "Türkçe";
+    links(l);
+  }
+
+  // Satın alma düğmeleri sayfanın diliyle onay sayfasına gider (TR ya da EN ürün)
+  function links(l) {
+    document.querySelectorAll("[data-checkout]").forEach(function (a) {
+      a.setAttribute("href", "onay.html?urun=" + encodeURIComponent(a.getAttribute("data-checkout")) + "&lang=" + l);
+    });
   }
 
   var q = new URLSearchParams(location.search).get("lang");
@@ -40,11 +39,6 @@ var CHECKOUT = {
       var next = root.getAttribute("data-lang") === "tr" ? "en" : "tr";
       apply(next);
       save(next);
-    });
-
-    document.querySelectorAll("[data-checkout]").forEach(function (a) {
-      var url = CHECKOUT[a.getAttribute("data-checkout")];
-      if (url) a.setAttribute("href", url);
     });
 
     var y = document.querySelectorAll(".year");
