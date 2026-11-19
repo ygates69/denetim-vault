@@ -2,7 +2,7 @@
 <html lang="tr" data-lang="tr">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; connect-src 'self' https://denetim-vault-onay.onay-kaydi.workers.dev; img-src 'self' data:; object-src 'none'; base-uri 'self'; form-action 'self' https://polar.sh https://*.polar.sh">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://challenges.cloudflare.com; frame-src https://challenges.cloudflare.com; connect-src 'self' https://denetim-vault-onay.onay-kaydi.workers.dev; img-src 'self' data:; object-src 'none'; base-uri 'self'; form-action 'self' https://polar.sh https://*.polar.sh">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Sipariş onayı — Denetim Vault</title>
@@ -40,6 +40,7 @@
   <p><label><input type="checkbox" id="onay-1"> <span id="onay-1-metin"></span></label></p>
   <p><label><input type="checkbox" id="onay-2"> <span id="onay-2-metin"></span></label></p>
   <p class="muted"><span class="tr">Kutular önceden işaretli değildir; ikisi işaretlenmeden ödemeye geçilemez. Onayınız; zamanı, metin sürümü ve sipariş numarasıyla kaydedilir ve sipariş e-postasında teyit edilir. Kayıtta adınız ve e-postanız tutulmaz.</span><span class="en">The boxes are not pre-ticked; payment cannot proceed until both are ticked. Your consent is recorded with its time, text version and order number, and confirmed in the order e-mail. Your name and e-mail are not stored in this record.</span></p>
+  <div id="dogrulama" class="u-my16"></div>
   <button class="btn btn-primary" id="odeme" type="button" disabled></button>
   <p class="u-mt12" id="mesaj" hidden></p>
   <p class="muted u-kucuk"><span class="tr">Metin sürümü:</span><span class="en">Text version:</span> <span id="belge-surumleri"></span></p>

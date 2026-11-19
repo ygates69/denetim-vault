@@ -3,7 +3,12 @@
 import { SURUM, BELGELER, METINLER, metinOzeti } from "./onay-metinleri.js";
 
 // Onay sunucusu (sunucu/onay-kaydi). Boşken satış kapalıdır: sayfa iletişim bölümüne yönlendirir.
-const ONAY_SUNUCU = "";
+const ONAY_SUNUCU = "https://denetim-vault-onay.onay-kaydi.workers.dev";
+
+// Cloudflare Turnstile site anahtarı (herkese açık değerdir; gizli anahtar yalnız sunucudadır). Boşken satış kapalıdır.
+// Kurucu Cloudflare panelinde oluşturur; alan adı: ygates69.github.io. Sunucu ana makine adını ve eylemi ("onay") denetler.
+const TURNSTILE_ANAHTAR = "0x4AAAAAAGI2MNCo9v9TThry";
+let dogrulamaBelirteci = null, dogrulamaKimligi = null;
 
 const URUN = {
   "bireysel": { tr: "Bireysel lisans", en: "Individual licence", fiyat: 300 },
@@ -17,9 +22,15 @@ const URUN = {
 
 const YAZI = {
   tr: { gec: "Ödemeye geç", bekle: "Ödeme sayfası hazırlanıyor…", kapali: "Online satış henüz açılmadı. Sipariş ve teklif için iletişim bölümünden bize yazın.",
-        hata: "Ödeme sayfası açılamadı. Lütfen birkaç dakika sonra yeniden deneyin ya da bize e-postayla yazın.", yok: "Ürün bulunamadı." },
+        hata: "Ödeme sayfası açılamadı. Lütfen birkaç dakika sonra yeniden deneyin ya da bize e-postayla yazın.", yok: "Ürün bulunamadı.",
+        dogrulama: "Güvenlik doğrulaması tamamlanamadı. Lütfen doğrulamayı yeniden yapıp tekrar deneyin.",
+        cok: "Kısa sürede çok fazla deneme yapıldı. Lütfen bir dakika sonra yeniden deneyin.",
+        yogun: "Online satış şu an yoğunluk nedeniyle geçici olarak kapalı. Lütfen daha sonra deneyin ya da bize e-postayla yazın." },
   en: { gec: "Continue to payment", bekle: "Preparing the checkout…", kapali: "Online sales are not open yet. Please contact us for orders and quotes.",
-        hata: "The checkout could not be opened. Please try again in a few minutes or e-mail us.", yok: "Product not found." }
+        hata: "The checkout could not be opened. Please try again in a few minutes or e-mail us.", yok: "Product not found.",
+        dogrulama: "The security check could not be completed. Please complete it again and retry.",
+        cok: "Too many attempts in a short time. Please try again in a minute.",
+        yogun: "Online sales are temporarily paused due to high demand. Please try again later or e-mail us." }
 };
 
 function dil() { return document.documentElement.getAttribute("data-lang") === "en" ? "en" : "tr"; }
@@ -38,33 +49,67 @@ function ciz() {
   durum(u);
 }
 
+function satisAcik() { return !!(ONAY_SUNUCU && TURNSTILE_ANAHTAR); }
+
 function durum(u) {
   const ok = document.getElementById("onay-1").checked && document.getElementById("onay-2").checked;
-  document.getElementById("odeme").disabled = !(ok && u);
+  // Satış açıkken düğme ancak güvenlik doğrulaması da tamamlanınca açılır; kapalıyken tıklama "satış kapalı" mesajını gösterir
+  document.getElementById("odeme").disabled = !(ok && u && (!satisAcik() || dogrulamaBelirteci));
+}
+
+function dogrulamaCiz() {
+  if (!satisAcik() || dogrulamaKimligi !== null || !window.turnstile) return;
+  const u = URUN[new URLSearchParams(location.search).get("urun")];
+  dogrulamaKimligi = window.turnstile.render("#dogrulama", {
+    sitekey: TURNSTILE_ANAHTAR, action: "onay", language: dil(), appearance: "interaction-only",
+    callback: b => { dogrulamaBelirteci = b; durum(u); },
+    "expired-callback": () => { dogrulamaBelirteci = null; durum(u); },
+    "error-callback": () => { dogrulamaBelirteci = null; durum(u); }
+  });
+}
+
+function dogrulamaYenile() {          // belirteç tek kullanımlıktır: her denemeden sonra yenilenir
+  dogrulamaBelirteci = null;
+  if (dogrulamaKimligi !== null && window.turnstile) window.turnstile.reset(dogrulamaKimligi);
 }
 
 async function ode() {
   const l = dil(), y = YAZI[l], d = document.getElementById("odeme"), m = document.getElementById("mesaj");
   const urun = new URLSearchParams(location.search).get("urun");
-  if (!ONAY_SUNUCU) { m.textContent = y.kapali; m.hidden = false; return; }
+  if (!satisAcik()) { m.textContent = y.kapali; m.hidden = false; return; }
+  if (!dogrulamaBelirteci) { m.textContent = y.dogrulama; m.hidden = false; return; }
   d.disabled = true; d.textContent = y.bekle; m.hidden = true;
   try {
     const r = await fetch(ONAY_SUNUCU + "/onay", {
       method: "POST", headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ urun, dil: l, metin_surumu: SURUM, metin_ozeti: await metinOzeti(SURUM, l),
-        kutu_1: document.getElementById("onay-1").checked, kutu_2: document.getElementById("onay-2").checked })
+        kutu_1: document.getElementById("onay-1").checked, kutu_2: document.getElementById("onay-2").checked,
+        dogrulama: dogrulamaBelirteci })
     });
     const j = await r.json();
     if (r.ok && j.url) { location.href = j.url; return; }
-    m.textContent = j.hata === "satis_kapali" ? y.kapali : y.hata;
+    m.textContent = j.hata === "satis_kapali" ? y.kapali : j.hata === "dogrulama" ? y.dogrulama
+      : j.hata === "cok_istek" ? y.cok : j.hata === "yogunluk" ? y.yogun : y.hata;
   } catch (e) {
     m.textContent = y.hata;
   }
+  dogrulamaYenile();
   m.hidden = false; d.textContent = y.gec; durum(URUN[urun]);
+}
+
+// Turnstile betiği yalnız satış açıkken yüklenir (satış kapalıyken Cloudflare'e hiç istek gitmez); yüklenince çizilir
+window.dvDogrulamaHazir = () => dogrulamaCiz();
+function dogrulamaYukle() {
+  if (!satisAcik() || document.getElementById("turnstile-betik")) return;
+  const b = document.createElement("script");
+  b.id = "turnstile-betik"; b.async = true;
+  b.src = "https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit&onload=dvDogrulamaHazir";
+  document.head.appendChild(b);
 }
 
 document.addEventListener("DOMContentLoaded", () => {
   ciz();
+  dogrulamaYukle();
   const u = URUN[new URLSearchParams(location.search).get("urun")];
   ["onay-1", "onay-2"].forEach(id => document.getElementById(id).addEventListener("change", () => durum(u)));
   document.getElementById("odeme").addEventListener("click", ode);
