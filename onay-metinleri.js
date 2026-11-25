@@ -2,7 +2,7 @@
 // Metin değişirse SURUM artırılır; eski sürümler HUKUKI_UYUM_DOSYASI.md'de arşivlenir, buradan silinmez.
 
 export const SURUM = "onay-v1";
-export const BELGELER = "KK3.2·IADE2.1·GIZ2.0·OBF1.0·MSS1.0";
+export const BELGELER = "KK3.3·IADE2.2·GIZ2.1·OBF1.1·MSS1.1";
 
 export const METINLER = {
   "onay-v1": {
